@@ -1,0 +1,16 @@
+apiVersion: cloudflare.example.com/v1
+kind: CloudflareTunnel
+metadata:
+  name: sample
+  namespace: default
+spec:
+  hostname: app.candeiasalexandre.com
+  rules:
+    - path: /api
+      backend:
+        serviceName: api
+        port: 8080
+    - path: /
+      backend:
+        serviceName: web
+        port: 80
