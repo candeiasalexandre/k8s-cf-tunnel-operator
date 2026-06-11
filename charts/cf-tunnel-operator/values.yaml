@@ -1,0 +1,76 @@
+# -- Namespace to install the operator into. Defaults to the release namespace.
+namespace: ""
+
+# -- If true, create the namespace. Use with caution — Helm will own the namespace lifecycle.
+createNamespace: false
+
+# -- Operator image settings
+image:
+  repository: ghcr.io/candeiasalexandre/k8s-cf-tunnel-operator
+  tag: latest
+  pullPolicy: IfNotPresent
+
+# -- Number of operator replicas
+replicas: 1
+
+# -- Resource requests & limits for the operator container
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 200m
+    memory: 128Mi
+
+# -- Liveness probe configuration
+livenessProbe:
+  initialDelaySeconds: 15
+  periodSeconds: 20
+
+# -- Readiness probe configuration
+readinessProbe:
+  initialDelaySeconds: 5
+  periodSeconds: 10
+
+# -- Security context for the operator pod
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 65532
+
+# -- Cloudflare API credentials.
+# Provide these values OR set cloudflare.existingSecret.
+cloudflare:
+  # -- Cloudflare Account ID
+  accountId: ""
+  # -- Cloudflare Zone ID
+  zoneId: ""
+  # -- Cloudflare API Token
+  apiToken: ""
+  # -- Name of an existing Secret containing CF_ACCOUNT_ID, CF_ZONE_ID, CF_API_TOKEN keys.
+  # If set, the chart will not create a Secret.
+  existingSecret: ""
+
+# -- Optional prefix for tunnel names created in Cloudflare (maps to TUNNEL_NAME_PREFIX env var)
+tunnelNamePrefix: ""
+
+# -- Additional pod annotations
+podAnnotations: {}
+
+# -- Additional pod labels
+podLabels: {}
+
+# -- Node selector for the operator pod
+nodeSelector: {}
+
+# -- Tolerations for the operator pod
+tolerations: []
+
+# -- Affinity for the operator pod
+affinity: {}
+
+# -- Prometheus ServiceMonitor (requires the prometheus-operator CRD)
+serviceMonitor:
+  enabled: false
+  interval: 30s
+  scrapeTimeout: 10s
+  labels: {}

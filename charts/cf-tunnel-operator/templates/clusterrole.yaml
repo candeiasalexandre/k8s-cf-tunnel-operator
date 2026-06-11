@@ -1,0 +1,67 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "cf-tunnel-operator.fullname" . }}
+  labels:
+    {{- include "cf-tunnel-operator.labels" . | nindent 4 }}
+rules:
+  # CloudflareTunnel CRD
+  - apiGroups:
+      - cloudflare.example.com
+    resources:
+      - cloudflaretunnels
+      - cloudflaretunnels/status
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  # Ingress adapter: read ingresses, write status
+  - apiGroups:
+      - networking.k8s.io
+    resources:
+      - ingresses
+      - ingresses/status
+    verbs:
+      - get
+      - list
+      - watch
+      - update
+      - patch
+  # Child resources for cloudflared pods
+  - apiGroups:
+      - ""
+    resources:
+      - secrets
+      - configmaps
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  - apiGroups:
+      - apps
+    resources:
+      - deployments
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  # Events
+  - apiGroups:
+      - ""
+    resources:
+      - events
+    verbs:
+      - create
+      - patch

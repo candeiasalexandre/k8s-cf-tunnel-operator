@@ -1,0 +1,10 @@
+{{- if .Values.createNamespace }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ include "cf-tunnel-operator.namespace" . }}
+  labels:
+    {{- include "cf-tunnel-operator.labels" . | nindent 4 }}
+  annotations:
+    helm.sh/resource-policy: keep
+{{- end }}

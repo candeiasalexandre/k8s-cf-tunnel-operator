@@ -1,0 +1,30 @@
+☁️  cf-tunnel-operator deployed to namespace {{ include "cf-tunnel-operator.namespace" . }}
+
+To verify the operator is running:
+
+  kubectl get deployment -n {{ include "cf-tunnel-operator.namespace" . }}
+
+To create a sample CloudflareTunnel (after configuring your Cloudflare credentials):
+
+  cat <<EOF | kubectl apply -f -
+  apiVersion: cloudflare.example.com/v1
+  kind: CloudflareTunnel
+  metadata:
+    name: my-tunnel
+    namespace: default
+  spec:
+    hostname: app.yourdomain.com
+    rules:
+      - path: /
+        backend:
+          serviceName: my-service
+          port: 80
+  EOF
+
+To uninstall the operator:
+
+  helm uninstall {{ .Release.Name }} -n {{ include "cf-tunnel-operator.namespace" . }}
+
+Note: CRDs are not removed by Helm. To remove them:
+
+  kubectl delete crd cloudflaretunnels.cloudflare.example.com

@@ -58,6 +58,10 @@ func (r *IngressAdapterReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 			return ctrl.Result{}, err
 		}
 		if err := r.Create(ctx, desired); err != nil {
+			if errors.IsNotFound(err) {
+				log.Info("CloudflareTunnel CRD not found, skipping Ingress (CRD may not be installed)")
+				return ctrl.Result{}, nil
+			}
 			return ctrl.Result{}, err
 		}
 		r.Recorder.Eventf(&ing, corev1.EventTypeNormal, "TunnelCreated", "Created CloudflareTunnel %s", desired.Name)

@@ -1,0 +1,17 @@
+apiVersion: v2
+name: cf-tunnel-operator
+description: A Kubernetes operator that manages Cloudflare Tunnels via CloudflareTunnel custom resources
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+home: https://github.com/candeiasalexandre/k8s-cf-tunnel-operator
+sources:
+  - https://github.com/candeiasalexandre/k8s-cf-tunnel-operator
+maintainers:
+  - name: candeiasalexandre
+keywords:
+  - cloudflare
+  - tunnel
+  - cloudflared
+  - operator
+  - ingress

@@ -1,0 +1,5 @@
+# Minikube overrides – use locally-built image, no registry pull needed
+image:
+  repository: cf-tunnel-operator
+  tag: latest
+  pullPolicy: IfNotPresent
