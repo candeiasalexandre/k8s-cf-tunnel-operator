@@ -2,10 +2,9 @@ name: Build & Push
 
 on:
   push:
-    branches:
-      - main
     tags:
       - v*
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
@@ -14,6 +13,7 @@ env:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    environment: release
     permissions:
       contents: read
       packages: write
