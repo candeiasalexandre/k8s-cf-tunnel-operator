@@ -42,7 +42,7 @@ minikube start
 ### 2. Deploy CRD + operator
 
 ```bash
-make deploy
+make helm-deploy-minikube
 ```
 
 ### 3. Create a Sample Ingress
