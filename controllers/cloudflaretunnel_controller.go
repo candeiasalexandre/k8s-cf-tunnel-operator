@@ -17,6 +17,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/tools/record"
+	"k8s.io/client-go/util/retry"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
@@ -85,8 +86,13 @@ func (r *CloudflareTunnelReconciler) Reconcile(ctx context.Context, req ctrl.Req
 			return ctrl.Result{}, err
 		}
 		tunnelID = t.ID
-		tunnel.Status.TunnelID = tunnelID
-		if err := r.Status().Update(ctx, &tunnel); err != nil {
+		if err := retry.RetryOnConflict(retry.DefaultRetry, func() error {
+			if err := r.Get(ctx, req.NamespacedName, &tunnel); err != nil {
+				return err
+			}
+			tunnel.Status.TunnelID = tunnelID
+			return r.Status().Update(ctx, &tunnel)
+		}); err != nil {
 			return ctrl.Result{}, err
 		}
 		r.Recorder.Eventf(&tunnel, corev1.EventTypeNormal, "TunnelCreated", "Created tunnel %s", tunnelID)
@@ -118,8 +124,13 @@ func (r *CloudflareTunnelReconciler) Reconcile(ctx context.Context, req ctrl.Req
 
 	// 6. Mark ready
 	if !tunnel.Status.Ready {
-		tunnel.Status.Ready = true
-		if err := r.Status().Update(ctx, &tunnel); err != nil {
+		if err := retry.RetryOnConflict(retry.DefaultRetry, func() error {
+			if err := r.Get(ctx, req.NamespacedName, &tunnel); err != nil {
+				return err
+			}
+			tunnel.Status.Ready = true
+			return r.Status().Update(ctx, &tunnel)
+		}); err != nil {
 			return ctrl.Result{}, err
 		}
 		r.Recorder.Eventf(&tunnel, corev1.EventTypeNormal, "Ready", "Tunnel %s is ready", tunnelID)

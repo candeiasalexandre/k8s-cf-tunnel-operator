@@ -5,6 +5,7 @@ import (
 
 	corev1 "k8s.io/api/core/v1"
 	networking "k8s.io/api/networking/v1"
+	"k8s.io/apimachinery/pkg/api/equality"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -68,10 +69,12 @@ func (r *IngressAdapterReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 		return ctrl.Result{}, nil
 	}
 
-	// Update existing
-	found.Spec = desired.Spec
-	if err := r.Update(ctx, found); err != nil {
-		return ctrl.Result{}, err
+	// Update existing (only if spec changed)
+	if !equality.Semantic.DeepEqual(found.Spec, desired.Spec) {
+		found.Spec = desired.Spec
+		if err := r.Update(ctx, found); err != nil {
+			return ctrl.Result{}, err
+		}
 	}
 
 	// Mirror status from CloudflareTunnel back to Ingress
